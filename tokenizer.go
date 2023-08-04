@@ -61,9 +61,6 @@ func (p *Tokenizer) Tokenize(input string) error {
 	return nil
 }
 
-func (p *Tokenizer) TokenizeNumber() {
-
-}
 
 func (p *Tokenizer) Print() {
 	for i, v := range p.tokens {
