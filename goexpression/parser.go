@@ -57,6 +57,18 @@ func (p *Parser) ParseTerms() (*AST, error) {
 	if err != nil {
 		return nil, err
 	}
+	for p.currentToken != nil && (p.currentToken.t == OPERATION_MULTIPLY || p.currentToken.t == OPERATION_DIVIDE) {
+		operator, err := GetTypeValue(p.currentToken.t)
+		if err != nil {
+			return nil, err
+		}
+		p.Pop()
+		secondValue, err := p.ParseFactor()
+		if err != nil {
+			return nil, err
+		}
+		firstValue = &AST{T: OPERATOR, Value: operator, Left: firstValue, Right: secondValue}
+	}
 	return firstValue, nil
 }
 

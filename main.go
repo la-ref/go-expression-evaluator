@@ -11,7 +11,7 @@ func main() {
 		fmt.Println(err)
 	}
 	tok.Print()
-	parser, err := goexpression.Parse("15+14-12")
+	parser, err := goexpression.Parse("12*12+14-12*12*45")
 	if err != nil {
 		fmt.Println(err)
 	}
