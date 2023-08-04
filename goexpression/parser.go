@@ -2,6 +2,7 @@ package goexpression
 
 import (
 	"fmt"
+	"goexpressionevaluator/goexpression/utils"
 	"strings"
 )
 
@@ -26,12 +27,19 @@ type Parser struct {
 	tokens []Token
 }
 
+func Evaluate(input string) {
+	parser := &Parser{
+		make([]Token, len(input)),
+	}
+	parser.Parse(input)
+}
+
 func (p *Parser) Parse(input string) {
 	input = strings.TrimSpace(input)
 	i := 0
-	for i != len(input)-1 {
+	for i != len(input) {
 		char := input[i]
-		fmt.Println(char)
+		fmt.Println(utils.IsCharANumberASCII(char))
 		i++
 	}
 }
