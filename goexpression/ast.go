@@ -8,7 +8,7 @@ import (
 type ASTType int
 
 func (t ASTType) MarshalJSON() ([]byte, error) {
-	names := [2]string{"OPERATOR", "VALUE"}
+	names := [...]string{"OPERATOR", "UNARY", "VALUE"}
 
 	if t < 0 || t >= ASTType(len(names)) {
 		return nil, fmt.Errorf("Invalid ASTType value: %d", t)
@@ -19,6 +19,7 @@ func (t ASTType) MarshalJSON() ([]byte, error) {
 
 const (
 	OPERATOR ASTType = iota
+	UNARY
 	VALUE
 )
 

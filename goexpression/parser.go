@@ -82,6 +82,15 @@ func (p *Parser) ParseFactor() (*AST, error) {
 		p.Pop()
 		return ast, nil
 	}
+	if p.currentToken != nil && p.currentToken.t == PARENTHESIS_LEFT {
+		p.Pop()
+		ast, err := p.ParseExpression()
+		if err != nil {
+			return nil, err
+		}
+		p.Pop()
+		return ast, nil
+	}
 
 	return nil, fmt.Errorf("Unknown Factor")
 }
