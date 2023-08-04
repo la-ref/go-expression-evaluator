@@ -1,85 +1,60 @@
 package goexpression
 
-import (
-	"fmt"
-	. "goexpressionevaluator/goexpression/utils"
-	"strings"
+type ASTType int
+
+const (
+	OPERATOR = iota
+	VALUE
 )
 
+type AST struct {
+	left  *AST
+	right *AST
+	t     ASTType
+	value int
+}
+
+func (a *AST) AddRight(r *AST) {
+	a.right = r
+}
+
+func (a *AST) AddLeft(l *AST) {
+	a.left = l
+}
+
 type Parser struct {
-	tokens []*Token
+	t            Tokenizer
+	currentToken *Token
+	ast          *AST
 }
 
-func Evaluate(input string) {
-	parser := &Parser{
-		make([]*Token, 0, len(input)),
-	}
-	parser.Parse(input)
+func (p *Parser) Pop() {
+	p.currentToken = p.t.PopToken()
 }
 
-func (p *Parser) Parse(input string) {
-	input = strings.TrimSpace(input)
-	i := 0
-	for i < len(input) {
-		char := Char(input[i])
-		t, err := CheckType(char)
-		if err != nil {
-			continue
-		}
-		if t == NUMBER {
-			val := ""
-			for t == NUMBER && i < len(input) {
-				char = Char(input[i])
-				t, err = CheckType(char)
-				fmt.Println(t, err, char)
-				if err != nil {
-					continue
-				}
-				if t != NUMBER {
-					break
-				}
-				val += string(char)
-				i++
-			}
-			err := p.AppendToken(t, val)
-			if err != nil {
-				continue
-			}
-			i--
-		} else {
-			err := p.AppendToken(t, string(char))
-			if err != nil {
-				continue
-			}
-		}
+// Parse addition and substraction
+func (p *Parser) ParseExpression() *AST {
+	p.ParseTerms()
+	return nil
 
-		i++
-	}
-	p.Print()
 }
 
-func (p *Parser) Print() {
-	for i, v := range p.tokens {
-		fmt.Printf("%d : [%d,%d]\n", i, v.t, v.value)
-	}
-}
-
-// Add a new token at the end of the slice
-func (p *Parser) AppendToken(t TokenType, value string) error {
-	token, err := NewToken(value)
-	if err != nil {
-		return err
-	}
-	p.tokens = append(p.tokens, token)
+// Parse Multiplication and division
+func (p *Parser) ParseTerms() *AST {
+	p.ParseFactor()
 	return nil
 }
 
-// Pop the first token of the slice and returns it
-func (p *Parser) PopToken() *Token {
-	var token *Token
-	if len(p.tokens) > 0 {
-		token = p.tokens[0]
-		p.tokens = p.tokens[1:]
+func (p *Parser) ParseFactor() *AST {
+	if p.currentToken.t == NUMBER {
+		val := p.currentToken.value
+		ast := &AST{
+			t:     VALUE,
+			value: val,
+		}
+		p.Pop()
+		return ast
 	}
-	return token
+
+	return nil
 }
