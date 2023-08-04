@@ -2,7 +2,7 @@ package goexpression
 
 import (
 	"fmt"
-	. "goexpressionevaluator/goexpression/utils"
+	. "goexpression/utils"
 	"strconv"
 )
 
