@@ -13,6 +13,12 @@ func eval(ast *AST) float64 {
 	switch ast.T {
 	case VALUE:
 		return float64(ast.Value.(int))
+	case UNARY:
+		if ast.Value == "-" {
+			return -eval(ast.Left)
+		} else {
+			return eval(ast.Left)
+		}
 	case OPERATOR:
 		switch ast.Value {
 		case "+":

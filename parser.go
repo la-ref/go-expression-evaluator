@@ -82,6 +82,23 @@ func (p *Parser) ParseFactor() (*AST, error) {
 		p.Pop()
 		return ast, nil
 	}
+	if p.currentToken != nil && (p.currentToken.t == OPERATION_MINUS || p.currentToken.t == OPERATION_PLUS) {
+		t, err := GetTypeValue(p.currentToken.t)
+		if err != nil {
+			return nil, err
+		}
+		p.Pop()
+		left, err := p.ParseFactor()
+		if err != nil {
+			return nil, err
+		}
+		ast := &AST{
+			T:     UNARY,
+			Value: t,
+			Left:  left,
+		}
+		return ast, nil
+	}
 	if p.currentToken != nil && p.currentToken.t == PARENTHESIS_LEFT {
 		p.Pop()
 		ast, err := p.ParseExpression()
