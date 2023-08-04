@@ -20,7 +20,7 @@ const (
 )
 
 type Token struct {
-	t     TokenType
+	t     TokenType // type
 	value int
 }
 
@@ -59,4 +59,22 @@ func CheckType[T string | Char](value T) (TokenType, error) {
 		return PARENTHESIS_RIGHT, nil
 	}
 	return 0, fmt.Errorf("Unknow Token type")
+}
+
+func GetTypeValue(t TokenType) (string, error) {
+	switch t {
+	case OPERATION_PLUS:
+		return "+", nil
+	case OPERATION_MINUS:
+		return "-", nil
+	case OPERATION_MULTIPLY:
+		return "*", nil
+	case OPERATION_DIVIDE:
+		return "/", nil
+	case PARENTHESIS_LEFT:
+		return "(", nil
+	case PARENTHESIS_RIGHT:
+		return ")", nil
+	}
+	return "", fmt.Errorf("Type not found")
 }

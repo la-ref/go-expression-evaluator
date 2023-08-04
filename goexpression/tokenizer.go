@@ -10,14 +10,18 @@ type Tokenizer struct {
 	tokens []*Token
 }
 
-func Evaluate(input string) {
-	parser := &Tokenizer{
+func NewTokenizer(input string) (*Tokenizer, error) {
+	tokenizer := &Tokenizer{
 		make([]*Token, 0, len(input)),
 	}
-	parser.Parse(input)
+	err := tokenizer.Tokenize(input)
+	if err != nil {
+		return nil, err
+	}
+	return tokenizer, nil
 }
 
-func (p *Tokenizer) Parse(input string) error {
+func (p *Tokenizer) Tokenize(input string) error {
 	input = strings.TrimSpace(input)
 	i := 0
 	for i < len(input) {
@@ -54,7 +58,6 @@ func (p *Tokenizer) Parse(input string) error {
 
 		i++
 	}
-	p.Print()
 	return nil
 }
 

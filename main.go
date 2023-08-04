@@ -3,10 +3,17 @@ package main
 import (
 	"fmt"
 	"goexpressionevaluator/goexpression"
-	"goexpressionevaluator/goexpression/utils"
 )
 
 func main() {
-	fmt.Println(utils.IsCharANumber("-"))
-	goexpression.Evaluate("15+14*21+(41-2)")
+	tok, err := goexpression.NewTokenizer("15+14-12")
+	if err != nil {
+		fmt.Println(err)
+	}
+	tok.Print()
+	parser, err := goexpression.Parse("15+14-12")
+	if err != nil {
+		fmt.Println(err)
+	}
+	parser.Print()
 }

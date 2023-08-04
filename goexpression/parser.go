@@ -1,31 +1,28 @@
 package goexpression
 
-type ASTType int
-
-const (
-	OPERATOR = iota
-	VALUE
+import (
+	"fmt"
 )
 
-type AST struct {
-	left  *AST
-	right *AST
-	t     ASTType
-	value int
-}
-
-func (a *AST) AddRight(r *AST) {
-	a.right = r
-}
-
-func (a *AST) AddLeft(l *AST) {
-	a.left = l
-}
-
 type Parser struct {
-	t            Tokenizer
+	t            *Tokenizer // type
 	currentToken *Token
-	ast          *AST
+}
+
+func Parse(value string) (*AST, error) {
+	tok, err := NewTokenizer(value)
+	if err != nil {
+		return nil, err
+	}
+	parser := &Parser{
+		t:            tok,
+		currentToken: tok.PopToken(),
+	}
+	ast, err := parser.ParseExpression()
+	if err != nil {
+		return nil, err
+	}
+	return ast, nil
 }
 
 func (p *Parser) Pop() {
@@ -33,28 +30,46 @@ func (p *Parser) Pop() {
 }
 
 // Parse addition and substraction
-func (p *Parser) ParseExpression() *AST {
-	p.ParseTerms()
-	return nil
+func (p *Parser) ParseExpression() (*AST, error) {
+	firstValue, err := p.ParseTerms()
+	if err != nil {
+		return nil, err
+	}
+	for p.currentToken.t == OPERATION_PLUS || p.currentToken.t == OPERATION_MINUS {
+		operator, err := GetTypeValue(p.currentToken.t)
+		if err != nil {
+			return nil, err
+		}
+		p.Pop()
+		secondValue, err := p.ParseTerms()
+		if err != nil {
+			return nil, err
+		}
+		firstValue = &AST{T: OPERATOR, Value: operator, Left: firstValue, Right: secondValue}
+	}
+	return firstValue, nil
 
 }
 
 // Parse Multiplication and division
-func (p *Parser) ParseTerms() *AST {
-	p.ParseFactor()
-	return nil
+func (p *Parser) ParseTerms() (*AST, error) {
+	firstValue, err := p.ParseFactor()
+	if err != nil {
+		return nil, err
+	}
+	return firstValue, nil
 }
 
-func (p *Parser) ParseFactor() *AST {
+func (p *Parser) ParseFactor() (*AST, error) {
 	if p.currentToken.t == NUMBER {
 		val := p.currentToken.value
 		ast := &AST{
-			t:     VALUE,
-			value: val,
+			T:     VALUE,
+			Value: val,
 		}
 		p.Pop()
-		return ast
+		return ast, nil
 	}
 
-	return nil
+	return nil, fmt.Errorf("Unknown Factor")
 }
