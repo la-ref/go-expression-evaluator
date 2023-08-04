@@ -35,7 +35,7 @@ func (p *Parser) ParseExpression() (*AST, error) {
 	if err != nil {
 		return nil, err
 	}
-	for p.currentToken.t == OPERATION_PLUS || p.currentToken.t == OPERATION_MINUS {
+	for p.currentToken != nil && (p.currentToken.t == OPERATION_PLUS || p.currentToken.t == OPERATION_MINUS) {
 		operator, err := GetTypeValue(p.currentToken.t)
 		if err != nil {
 			return nil, err
@@ -61,7 +61,7 @@ func (p *Parser) ParseTerms() (*AST, error) {
 }
 
 func (p *Parser) ParseFactor() (*AST, error) {
-	if p.currentToken.t == NUMBER {
+	if p.currentToken != nil && p.currentToken.t == NUMBER {
 		val := p.currentToken.value
 		ast := &AST{
 			T:     VALUE,
