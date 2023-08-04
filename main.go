@@ -6,10 +6,10 @@ import (
 )
 
 func main() {
-	parser, err := goexpression.Parse("12*5-1*51*5+3")
+	parser, err := goexpression.Parse("12/3")
 	if err != nil {
 		fmt.Println(err)
 	}
 	parser.Print()
-	fmt.Println(goexpression.Evaluate("12*5-1*51*5+3"))
+	fmt.Println(goexpression.Evaluate("-13/-3"))
 }
