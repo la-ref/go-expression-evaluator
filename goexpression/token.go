@@ -28,6 +28,7 @@ type Token struct {
 func NewToken(value string) (*Token, error) {
 	token := new(Token)
 	t, err := CheckType(value)
+
 	if err != nil {
 		return nil, err
 	}

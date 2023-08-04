@@ -8,5 +8,5 @@ import (
 
 func main() {
 	fmt.Println(utils.IsCharANumber("-"))
-	goexpression.Evaluate("1547")
+	goexpression.Evaluate("15+14*21+(41-2)")
 }

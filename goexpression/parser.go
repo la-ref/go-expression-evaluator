@@ -12,7 +12,7 @@ type Parser struct {
 
 func Evaluate(input string) {
 	parser := &Parser{
-		make([]*Token, len(input)),
+		make([]*Token, 0, len(input)),
 	}
 	parser.Parse(input)
 }
@@ -26,21 +26,36 @@ func (p *Parser) Parse(input string) {
 		if err != nil {
 			continue
 		}
-		val := ""
-		for t == NUMBER && i < len(input) {
-			char = Char(input[i])
-			t, err = CheckType(char)
+		if t == NUMBER {
+			val := ""
+			for t == NUMBER && i < len(input) {
+				char = Char(input[i])
+				t, err = CheckType(char)
+				fmt.Println(t, err, char)
+				if err != nil {
+					continue
+				}
+				if t != NUMBER {
+					break
+				}
+				val += string(char)
+				i++
+			}
+			err := p.AppendToken(t, val)
 			if err != nil {
 				continue
 			}
-			val += string(char)
-			i++
+			i--
+		} else {
+			err := p.AppendToken(t, string(char))
+			if err != nil {
+				continue
+			}
 		}
-		p.AppendToken(t, string(char))
-		fmt.Println(val)
 
 		i++
 	}
+	p.Print()
 }
 
 func (p *Parser) Print() {
@@ -50,9 +65,13 @@ func (p *Parser) Print() {
 }
 
 // Add a new token at the end of the slice
-func (p *Parser) AppendToken(t TokenType, value string) {
-	token, _ := NewToken(value)
+func (p *Parser) AppendToken(t TokenType, value string) error {
+	token, err := NewToken(value)
+	if err != nil {
+		return err
+	}
 	p.tokens = append(p.tokens, token)
+	return nil
 }
 
 // Pop the first token of the slice and returns it
