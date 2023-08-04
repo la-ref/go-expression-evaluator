@@ -1,39 +1,10 @@
 package goexpression
 
 import (
-	"goexpressionevaluator/goexpression/utils"
+	"fmt"
+	. "goexpressionevaluator/goexpression/utils"
 	"strings"
 )
-
-type TokenType int
-
-// Token types
-const (
-	NUMBER TokenType = iota
-	OPERATION_PLUS
-	OPERATION_MINUS
-	OPERATION_MULTIPLY
-	OPERATION_DIVIDE
-	PARENTHESIS_LEFT
-	PARENTHESIS_RIGHT
-)
-
-type Token struct {
-	t     TokenType
-	value int
-}
-
-// Create a new token with its type and its value
-func NewToken(t TokenType, value int) *Token {
-	token := new(Token)
-	if t == NUMBER {
-		token.value = value
-	} else {
-		token.value = 0
-	}
-	token.t = t
-	return token
-}
 
 type Parser struct {
 	tokens []*Token
@@ -49,19 +20,38 @@ func Evaluate(input string) {
 func (p *Parser) Parse(input string) {
 	input = strings.TrimSpace(input)
 	i := 0
-	for i != len(input) {
-		char := input[i]
-		for utils.IsCharANumberASCII(char) {
-
+	for i < len(input) {
+		char := Char(input[i])
+		t, err := CheckType(char)
+		if err != nil {
+			continue
 		}
+		val := ""
+		for t == NUMBER && i < len(input) {
+			char = Char(input[i])
+			t, err = CheckType(char)
+			if err != nil {
+				continue
+			}
+			val += string(char)
+			i++
+		}
+		p.AppendToken(t, string(char))
+		fmt.Println(val)
 
 		i++
 	}
 }
 
+func (p *Parser) Print() {
+	for i, v := range p.tokens {
+		fmt.Printf("%d : [%d,%d]\n", i, v.t, v.value)
+	}
+}
+
 // Add a new token at the end of the slice
-func (p *Parser) AppendToken(t TokenType, value int) {
-	token := NewToken(t, value)
+func (p *Parser) AppendToken(t TokenType, value string) {
+	token, _ := NewToken(value)
 	p.tokens = append(p.tokens, token)
 }
 
